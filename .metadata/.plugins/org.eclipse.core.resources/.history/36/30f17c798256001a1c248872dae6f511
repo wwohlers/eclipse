@@ -20,13 +20,6 @@ abstract class ABST<T> {
   boolean sameNode(ABST<T> other) {
     return false;
   }
-  
-  boolean sameData(ABST<T> other) {
-    return this.sameDataH(other) && other.sameDataH(this);
-  }
-  
-  // checks that everything in this tree is in the other tree
-  abstract boolean sameDataH(ABST<T> other);
 }
 
 class Leaf<T> extends ABST<T> {
@@ -48,13 +41,6 @@ class Leaf<T> extends ABST<T> {
   
   boolean sameLeaf(Leaf<T> other) {
     return true;
-  }
-  
-  boolean sameDataH(ABST<T> other) {
-    return true;
-  }
-  
-  boolean sameData(ABST<T> other) {
   }
 }
 
@@ -101,12 +87,6 @@ class Node<T> extends ABST<T> {
     return this.order.compare(this.data, other.data) == 0
         && this.left.sameTree(other.left)
         && this.right.sameTree(other.right);
-  }
-  
-  boolean sameDataH(ABST<T> other) {
-    return other.present(this.data)
-        && this.left.sameDataH(other)
-        && this.right.sameDataH(other);
   }
 }
 

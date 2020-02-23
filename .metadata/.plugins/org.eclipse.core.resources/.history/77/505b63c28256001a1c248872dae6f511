@@ -21,9 +21,7 @@ abstract class ABST<T> {
     return false;
   }
   
-  boolean sameData(ABST<T> other) {
-    return this.sameDataH(other) && other.sameDataH(this);
-  }
+  abstract boolean sameData(ABST<T> other);
   
   // checks that everything in this tree is in the other tree
   abstract boolean sameDataH(ABST<T> other);
@@ -52,9 +50,6 @@ class Leaf<T> extends ABST<T> {
   
   boolean sameDataH(ABST<T> other) {
     return true;
-  }
-  
-  boolean sameData(ABST<T> other) {
   }
 }
 
@@ -104,9 +99,7 @@ class Node<T> extends ABST<T> {
   }
   
   boolean sameDataH(ABST<T> other) {
-    return other.present(this.data)
-        && this.left.sameDataH(other)
-        && this.right.sameDataH(other);
+    
   }
 }
 

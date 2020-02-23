@@ -6,55 +6,11 @@ abstract class ABST<T> {
   Comparator<T> order;
   
   abstract ABST<T> insert(T el);
-  
-  abstract boolean present(T el);
-  
-  abstract ABST<T> getLeftmost();
-  
-  abstract boolean sameTree(ABST<T> other);
-  
-  boolean sameLeaf(ABST<T> other) {
-    return false;
-  }
-  
-  boolean sameNode(ABST<T> other) {
-    return false;
-  }
-  
-  boolean sameData(ABST<T> other) {
-    return this.sameDataH(other) && other.sameDataH(this);
-  }
-  
-  // checks that everything in this tree is in the other tree
-  abstract boolean sameDataH(ABST<T> other);
 }
 
 class Leaf<T> extends ABST<T> {
   ABST<T> insert(T el) {
     return new Node<T>(el, new Leaf<T>(), new Leaf<T>());
-  }
-  
-  boolean present(T el) {
-    return false;
-  }
-  
-  ABST<T> getLeftmost() {
-    return this;
-  }
-  
-  boolean sameTree(ABST<T> other) {
-    return other.sameLeaf(this);
-  }
-  
-  boolean sameLeaf(Leaf<T> other) {
-    return true;
-  }
-  
-  boolean sameDataH(ABST<T> other) {
-    return true;
-  }
-  
-  boolean sameData(ABST<T> other) {
   }
 }
 
@@ -75,38 +31,6 @@ class Node<T> extends ABST<T> {
     } else {
       return new Node<T>(this.data, this.left, this.right.insert(el));
     }
-  }
-  
-  boolean present(T el) {
-    if (this.order.compare(this.data, el) == 0) {
-      return true;
-    } else {
-      if (this.order.compare(el, this.data) < 0) {
-        return this.left.present(el);
-      } else {
-        return this.right.present(el);
-      }
-    }
-  }
-  
-  ABST<T> getLeftmost() {
-    return this;
-  }
-  
-  boolean sameTree(ABST<T> other) {
-    return other.sameNode(this);
-  }
-  
-  boolean sameNode(Node<T> other) {
-    return this.order.compare(this.data, other.data) == 0
-        && this.left.sameTree(other.left)
-        && this.right.sameTree(other.right);
-  }
-  
-  boolean sameDataH(ABST<T> other) {
-    return other.present(this.data)
-        && this.left.sameDataH(other)
-        && this.right.sameDataH(other);
   }
 }
 
