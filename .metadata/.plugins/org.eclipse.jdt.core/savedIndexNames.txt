@@ -1,0 +1,4 @@
+INDEX VERSION 1.131+/home/bill/Documents/Eclipse/.metadata/.plugins/org.eclipse.jdt.core
+2188923391.index
+2648498694.index
+3988133513.index
