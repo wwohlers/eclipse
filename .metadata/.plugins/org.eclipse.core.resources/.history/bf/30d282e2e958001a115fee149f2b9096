@@ -44,9 +44,6 @@ abstract class ABST<T> {
 
   // checks that everything in this tree is in the other tree
   abstract boolean sameDataH(ABST<T> other);
-  
-  // builds a list representation of this binary search tree in order
-  abstract IList<T> buildList();
 }
 
 // to represent a leaf at the end of a binary tree
@@ -94,10 +91,6 @@ class Leaf<T> extends ABST<T> {
   // checks that everything in this leaf is in the given ABST
   boolean sameDataH(ABST<T> other) {
     return true;
-  }
-  
-  IList<T> buildList() {
-    return new MtList<T>();
   }
 }
 
@@ -174,10 +167,6 @@ class Node<T> extends ABST<T> {
   boolean sameDataH(ABST<T> other) {
     return other.present(this.data) && this.left.sameDataH(other) && this.right.sameDataH(other);
   }
-  
-  IList<T> buildList() {
-    return new ConsList<T>(this.getLeftmost(), this.getRight().buildList());
-  }
 }
 
 // to represent a book object
@@ -235,7 +224,7 @@ interface ILoString {
 interface IList<T> {
   IList<T> filter(Predicate<T> pred);
   <U> IList<U> map(Function<T,U> converter);
-  <U> U fold(BiFunction<T,U,U> converter,U initial);
+  <U> U fold(BiFunction<T,U,U> converter,U initial);  
 }
 
 class MtList<T> implements IList<T> {
@@ -356,7 +345,7 @@ class ExamplesABST<T> {
   IList<Book> byTitle = new ConsList<Book>(b4, new ConsList<Book>(b3, new ConsList<Book>(b5, new ConsList<Book>(b1, new ConsList<Book>(b2, mt)))));
   IList<Book> byAuthor = new ConsList<Book>(b1, new ConsList<Book>(b2, new ConsList<Book>(b3, new ConsList<Book>(b4, new ConsList<Book>(b5, mt)))));
   IList<Book> byPrice = new ConsList<Book>(b4, new ConsList<Book>(b1, new ConsList<Book>(b5, new ConsList<Book>(b3, new ConsList<Book>(b2, mt)))));
-  IList<Book> randomList = new ConsList<Book>(b3, new ConsList<Book>(b5, new ConsList<Book>(b4, new ConsList<Book>(b7, new ConsList<Book>(b8, mt)))));
+  
 
   // tests for insert
   boolean testInsert(Tester t) {

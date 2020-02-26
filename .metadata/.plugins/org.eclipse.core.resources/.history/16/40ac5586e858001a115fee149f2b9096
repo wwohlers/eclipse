@@ -1,5 +1,4 @@
 import java.util.Comparator;
-import java.util.function.*;
 
 import tester.*;
 
@@ -21,7 +20,7 @@ abstract class ABST<T> {
   abstract T getLeftmostAcc(T acc);
 
   // returns the binary tree containing all but the leftmost item
-  abstract ABST<T> getRight();
+  // abstract ABST<T> getRight();
 
   // returns true if this binary tree has the same values/structure as the given
   // binary tree
@@ -44,9 +43,6 @@ abstract class ABST<T> {
 
   // checks that everything in this tree is in the other tree
   abstract boolean sameDataH(ABST<T> other);
-  
-  // builds a list representation of this binary search tree in order
-  abstract IList<T> buildList();
 }
 
 // to represent a leaf at the end of a binary tree
@@ -74,11 +70,6 @@ class Leaf<T> extends ABST<T> {
   T getLeftmostAcc(T acc) {
     return acc;
   }
-  
-  // throws exception (no rightmost of a leaf by itself)
-  ABST<T> getRight() {
-    throw new RuntimeException("No right of an empty tree");
-  }
 
   // returns true if this binary tree has the same values/structure as the given
   // binary tree
@@ -94,10 +85,6 @@ class Leaf<T> extends ABST<T> {
   // checks that everything in this leaf is in the given ABST
   boolean sameDataH(ABST<T> other) {
     return true;
-  }
-  
-  IList<T> buildList() {
-    return new MtList<T>();
   }
 }
 
@@ -148,15 +135,6 @@ class Node<T> extends ABST<T> {
   T getLeftmostAcc(T acc) {
     return this.left.getLeftmostAcc(this.data);
   }
-  
-  // get the part of a tree excluding the leftmost item
-  ABST<T> getRight() {
-    if (this.order.compare(this.data, this.getLeftmost()) == 0) {
-      return this.right;
-    } else {
-      return new Node<T>(this.order, this.data, this.left.getRight(), this.right);
-    }
-  }
 
   // returns true if this binary tree has the same values/structure as the given
   // binary tree
@@ -173,10 +151,6 @@ class Node<T> extends ABST<T> {
   // checks that everything in this node is in the given ABST
   boolean sameDataH(ABST<T> other) {
     return other.present(this.data) && this.left.sameDataH(other) && this.right.sameDataH(other);
-  }
-  
-  IList<T> buildList() {
-    return new ConsList<T>(this.getLeftmost(), this.getRight().buildList());
   }
 }
 
@@ -225,72 +199,6 @@ class NumOrder implements Comparator<Integer> {
 class StringOrder implements Comparator<String> {
   public int compare(String s1, String s2) {
     return s1.compareTo(s2);
-  }
-}
-
-interface ILoString {
-  
-}
-
-interface IList<T> {
-  IList<T> filter(Predicate<T> pred);
-  <U> IList<U> map(Function<T,U> converter);
-  <U> U fold(BiFunction<T,U,U> converter,U initial);
-}
-
-class MtList<T> implements IList<T> {
-  
-  MtList() {}
-
-  @Override
-  public IList<T> filter(Predicate<T> pred) {
-    // TODO Auto-generated method stub
-    return new MtList<T>();
-  }
-
-  @Override
-  public <U> IList<U> map(Function<T, U> converter) {
-    // TODO Auto-generated method stub
-    return new MtList<U>();
-  }
-
-  @Override
-  public <U> U fold(BiFunction<T, U, U> converter, U initial) {
-    // TODO Auto-generated method stub
-    return initial;
-  }
-}
-
-class ConsList<T> implements IList<T> {
-  T first;
-  IList<T> rest;
-  
-  ConsList(T first,IList<T> rest) {
-    this.first = first;
-    this.rest = rest;
-  }
-
-  @Override
-  public IList<T> filter(Predicate<T> pred) {
-    // TODO Auto-generated method stub
-    if (pred.test(this.first)) {
-      return new ConsList<T>(this.first,this.rest.filter(pred));
-    }
-    else {
-      return this.rest.filter(pred);
-    }
-  }
-
-  @Override
-  public <U> IList<U> map(Function<T, U> converter) {
-    // TODO Auto-generated method stub
-    return new ConsList<U>(converter.apply(this.first),this.rest.map(converter));
-  }
-
-  @Override
-  public <U> U fold(BiFunction<T, U, U> converter, U initial) {
-    // TODO Auto-generated method stub
-    return converter.apply(this.first, this.rest.fold(converter,initial));
   }
 }
 
@@ -351,12 +259,6 @@ class ExamplesABST<T> {
           new Node<Book>(new BooksByPrice(), b3,
               new Node<Book>(new BooksByPrice(), b5, leaf5, leaf5), leaf5)),
       leaf5);
-  
-  IList<Book> mt = new MtList<Book>();
-  IList<Book> byTitle = new ConsList<Book>(b4, new ConsList<Book>(b3, new ConsList<Book>(b5, new ConsList<Book>(b1, new ConsList<Book>(b2, mt)))));
-  IList<Book> byAuthor = new ConsList<Book>(b1, new ConsList<Book>(b2, new ConsList<Book>(b3, new ConsList<Book>(b4, new ConsList<Book>(b5, mt)))));
-  IList<Book> byPrice = new ConsList<Book>(b4, new ConsList<Book>(b1, new ConsList<Book>(b5, new ConsList<Book>(b3, new ConsList<Book>(b2, mt)))));
-  IList<Book> randomList = new ConsList<Book>(b3, new ConsList<Book>(b5, new ConsList<Book>(b4, new ConsList<Book>(b7, new ConsList<Book>(b8, mt)))));
 
   // tests for insert
   boolean testInsert(Tester t) {
