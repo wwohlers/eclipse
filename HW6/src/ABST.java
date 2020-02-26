@@ -2,114 +2,145 @@ import java.util.Comparator;
 
 import tester.*;
 
+// to represent a binary tree
 abstract class ABST<T> {
   Comparator<T> order;
-  
+
+  // inserts the given object into the binary tree
   abstract ABST<T> insert(T el);
-  
+
+  // returns true if the given object is in the binary tree
   abstract boolean present(T el);
-  
+
+  // returns the leftmost item contained in the binary tree
   abstract ABST<T> getLeftmost();
-  
+
+  // returns the binary tree containing all but the leftmost item
+  // abstract ABST<T> getRight();
+
+  // returns true if this binary tree has the same values/structure as the given
+  // binary tree
   abstract boolean sameTree(ABST<T> other);
-  
-  boolean sameLeaf(ABST<T> other) {
+
+  // returns true if the given ABST is the same as this leaf
+  boolean sameLeaf(Leaf<T> other) {
     return false;
   }
-  
-  boolean sameNode(ABST<T> other) {
+
+  // returns true if the given ABST is the same as this node
+  boolean sameNode(Node<T> other) {
     return false;
   }
-  
+
+  // returns true if both this and the given binary tree contain the same data
   boolean sameData(ABST<T> other) {
     return this.sameDataH(other) && other.sameDataH(this);
   }
-  
+
   // checks that everything in this tree is in the other tree
   abstract boolean sameDataH(ABST<T> other);
 }
 
+// to represent a leaf at the end of a binary tree
 class Leaf<T> extends ABST<T> {
-  ABST<T> insert(T el) {
-    return new Node<T>(el, new Leaf<T>(), new Leaf<T>());
+  Leaf(Comparator<T> order) {
+    this.order = order;
   }
-  
+
+  // inserts the given object into the binary tree
+  ABST<T> insert(T el) {
+    return new Node<T>(this.order, el, new Leaf<T>(this.order), new Leaf<T>(this.order));
+  }
+
+  // returns true if the given object is in the binary tree
   boolean present(T el) {
     return false;
   }
-  
+
+  // returns the leftmost item contained in the binary tree
   ABST<T> getLeftmost() {
     return this;
   }
-  
+
+  // returns true if this binary tree has the same values/structure as the given
+  // binary tree
   boolean sameTree(ABST<T> other) {
     return other.sameLeaf(this);
   }
-  
+
+  // returns true if the given ABST is the same as this leaf
   boolean sameLeaf(Leaf<T> other) {
     return true;
   }
-  
+
+  // checks that everything in this leaf is in the given ABST
   boolean sameDataH(ABST<T> other) {
     return true;
   }
-  
-  boolean sameData(ABST<T> other) {
-  }
 }
 
+// to represent a node in a binary tree
 class Node<T> extends ABST<T> {
   T data;
   ABST<T> left;
   ABST<T> right;
 
-  Node(T data, ABST<T> left, ABST<T> right) {
+  Node(Comparator<T> order, T data, ABST<T> left, ABST<T> right) {
+    this.order = order;
     this.data = data;
     this.left = left;
     this.right = right;
   }
-  
+
+  // inserts the given object into the binary tree
   ABST<T> insert(T el) {
     if (this.order.compare(el, this.data) < 0) {
-      return new Node<T>(this.data, this.left.insert(el), this.right);
-    } else {
-      return new Node<T>(this.data, this.left, this.right.insert(el));
+      return new Node<T>(this.order, this.data, this.left.insert(el), this.right);
+    }
+    else {
+      return new Node<T>(this.order, this.data, this.left, this.right.insert(el));
     }
   }
-  
+
+  // returns true if the given object is in the binary tree
   boolean present(T el) {
     if (this.order.compare(this.data, el) == 0) {
       return true;
-    } else {
+    }
+    else {
       if (this.order.compare(el, this.data) < 0) {
         return this.left.present(el);
-      } else {
+      }
+      else {
         return this.right.present(el);
       }
     }
   }
-  
+
+  // returns the leftmost item contained in the binary tree
   ABST<T> getLeftmost() {
     return this;
   }
-  
+
+  // returns true if this binary tree has the same values/structure as the given
+  // binary tree
   boolean sameTree(ABST<T> other) {
     return other.sameNode(this);
   }
-  
+
+  // returns true if the given ABST is the same as this node
   boolean sameNode(Node<T> other) {
-    return this.order.compare(this.data, other.data) == 0
-        && this.left.sameTree(other.left)
+    return this.order.compare(this.data, other.data) == 0 && this.left.sameTree(other.left)
         && this.right.sameTree(other.right);
   }
-  
+
+  // checks that everything in this node is in the given ABST
   boolean sameDataH(ABST<T> other) {
-    return other.present(this.data)
-        && this.left.sameDataH(other)
-        && this.right.sameDataH(other);
+    return other.present(this.data) && this.left.sameDataH(other) && this.right.sameDataH(other);
   }
 }
 
+// to represent a book object
 class Book {
   String title;
   String author;
@@ -122,59 +153,227 @@ class Book {
   }
 }
 
+// function object for comparing books by title
 class BooksByTitle implements Comparator<Book> {
   public int compare(Book b1, Book b2) {
     return b1.title.compareTo(b2.title);
   }
 }
 
+// function object for comparing books by author
 class BooksByAuthor implements Comparator<Book> {
   public int compare(Book b1, Book b2) {
     return b1.author.compareTo(b2.author);
   }
 }
 
+// function object for comparing books by price
 class BooksByPrice implements Comparator<Book> {
   public int compare(Book b1, Book b2) {
     return b1.price - b2.price;
   }
 }
 
+// function object for comparing numbers
+class NumOrder implements Comparator<Integer> {
+  public int compare(Integer i1, Integer i2) {
+    return i1 - i2;
+  }
+}
+
+// function object for comparing strings
+class StringOrder implements Comparator<String> {
+  public int compare(String s1, String s2) {
+    return s1.compareTo(s2);
+  }
+}
+
+// examples and tests
 class ExamplesABST<T> {
+  // Empty cases
+  ABST<Integer> leaf1 = new Leaf<Integer>(new NumOrder());
+  ABST<String> leaf2 = new Leaf<String>(new StringOrder());
+  ABST<Book> leaf3 = new Leaf<Book>(new BooksByTitle());
+  ABST<Book> leaf4 = new Leaf<Book>(new BooksByAuthor());
+  ABST<Book> leaf5 = new Leaf<Book>(new BooksByPrice());
+
   // Valid Int
-  ABST<Integer> validInt = new Node<Integer>(3,
-      new Node<Integer>(2, new Node<Integer>(1, new Leaf<Integer>(), new Leaf<Integer>()), new Leaf<Integer>()),
-      new Node<Integer>(4, new Leaf<Integer>(), new Leaf<Integer>()));
+  ABST<Integer> validInt = new Node<Integer>(
+      new NumOrder(), 3, new Node<Integer>(new NumOrder(), 2,
+          new Node<Integer>(new NumOrder(), 1, leaf1, leaf1), leaf1),
+      new Node<Integer>(new NumOrder(), 4, leaf1, leaf1));
 
   // Valid String
-  ABST<String> validStr = new Node<String>("Fundies",
-      new Node<String>("Discrete", new Node<String>("Cybersecurity", new Leaf<String>(), new Leaf<String>()),
-          new Node<String>("Engineering", new Leaf<String>(), new Leaf<String>())),
-      new Leaf<String>());
+  ABST<String> validStr = new Node<String>(new StringOrder(), "Fundies",
+      new Node<String>(new StringOrder(), "Discrete",
+          new Node<String>(new StringOrder(), "Cybersecurity", leaf2, leaf2),
+          new Node<String>(new StringOrder(), "Engineering", leaf2, leaf2)),
+      leaf2);
 
   // Invalid Int
-  ABST<Integer> invalidInt = new Node<Integer>(3, new Node<Integer>(1, new Leaf<Integer>(), new Leaf<Integer>()),
-      new Node<Integer>(4, new Node<Integer>(2, new Leaf<Integer>(), new Leaf<Integer>()),
-          new Node<Integer>(5, new Leaf<Integer>(), new Leaf<Integer>())));
+  ABST<Integer> invalidInt = new Node<Integer>(new NumOrder(), 3,
+      new Node<Integer>(new NumOrder(), 1, leaf1, leaf1),
+      new Node<Integer>(new NumOrder(), 4, new Node<Integer>(new NumOrder(), 2, leaf1, leaf1),
+          new Node<Integer>(new NumOrder(), 5, leaf1, leaf1)));
 
   // Book examples
-  ABST<Book> leaf = new Leaf<Book>();
   Book b1 = new Book("Great Gatsby", "F Scott Fitzgerald", 10);
   Book b2 = new Book("The Bible", "God", 200);
   Book b3 = new Book("Countdown to Zero Day", "Kim Zetter", 20);
   Book b4 = new Book("Adventures of Huckleberry Finn", "Mark Twain", 8);
   Book b5 = new Book("Fahrenheit 451", "Ray Bradbury", 16);
+  Book b6 = new Book("Invisible Man", "Ralph Ellison", 18);
+  Book b7 = new Book("Slaughterhouse Five", "Kurt Vonnegut", 30);
+  Book b8 = new Book("Ender's Game", "Orson Scott Card", 100);
 
   // Book example 1 (valid for titles)
-  ABST<Book> books1 = new Node<Book>(b5, new Node<Book>(b3, new Node<Book>(b4, leaf, leaf), leaf),
-      new Node<Book>(b1, leaf, new Node<Book>(b2, leaf, leaf)));
+  ABST<Book> books1 = new Node<Book>(new BooksByTitle(), b5,
+      new Node<Book>(new BooksByTitle(), b3, new Node<Book>(new BooksByTitle(), b4, leaf3, leaf3),
+          leaf3),
+      new Node<Book>(new BooksByTitle(), b1, leaf3,
+          new Node<Book>(new BooksByTitle(), b2, leaf3, leaf3)));
 
   // Book example 2 (valid for authors)
-  ABST<Book> books2 = new Node<Book>(b2, new Node<Book>(b1, leaf, leaf),
-      new Node<Book>(b3, leaf, new Node<Book>(b4, leaf, new Node<Book>(b5, leaf, leaf))));
+  ABST<Book> books2 = new Node<Book>(new BooksByAuthor(), b2,
+      new Node<Book>(new BooksByAuthor(), b1, leaf4, leaf4),
+      new Node<Book>(new BooksByAuthor(), b3, leaf4, new Node<Book>(new BooksByAuthor(), b4, leaf4,
+          new Node<Book>(new BooksByAuthor(), b5, leaf4, leaf4))));
 
   // Book example 3 (valid for prices)
-  ABST<Book> books3 = new Node<Book>(b2,
-      new Node<Book>(b1, new Node<Book>(b4, leaf, leaf), new Node<Book>(b3, new Node<Book>(b5, leaf, leaf), leaf)),
-      leaf);
+  ABST<Book> books3 = new Node<Book>(new BooksByPrice(), b2,
+      new Node<Book>(new BooksByPrice(), b1, new Node<Book>(new BooksByPrice(), b4, leaf5, leaf5),
+          new Node<Book>(new BooksByPrice(), b3,
+              new Node<Book>(new BooksByPrice(), b5, leaf5, leaf5), leaf5)),
+      leaf5);
+
+  // tests for insert
+  boolean testInsert(Tester t) {
+    return t.checkExpect(leaf1.insert(10), new Node<Integer>(new NumOrder(), 10, leaf1, leaf1))
+        && t.checkExpect(leaf2.insert("Hello"),
+            new Node<String>(new StringOrder(), "Hello", leaf2, leaf2))
+        && t.checkExpect(leaf3.insert(b1), new Node<Book>(new BooksByTitle(), b1, leaf3, leaf3))
+        && t.checkExpect(books1.insert(b6),
+            new Node<Book>(new BooksByTitle(), b5,
+                new Node<Book>(new BooksByTitle(), b3,
+                    new Node<Book>(new BooksByTitle(), b4, leaf3, leaf3), leaf3),
+                new Node<Book>(new BooksByTitle(), b1, leaf3,
+                    new Node<Book>(new BooksByTitle(), b2,
+                        new Node<Book>(new BooksByTitle(), b6, leaf3, leaf3), leaf3))))
+        && t.checkExpect(books2.insert(b7),
+            new Node<Book>(new BooksByAuthor(), b2,
+                new Node<Book>(new BooksByAuthor(), b1, leaf4, leaf4),
+                new Node<Book>(new BooksByAuthor(), b3, leaf4,
+                    new Node<Book>(new BooksByAuthor(), b4,
+                        new Node<Book>(new BooksByAuthor(), b7, leaf4, leaf4),
+                        new Node<Book>(new BooksByAuthor(), b5, leaf4, leaf4)))))
+        && t.checkExpect(books3.insert(b8),
+            new Node<Book>(new BooksByPrice(), b2,
+                new Node<Book>(new BooksByPrice(), b1,
+                    new Node<Book>(new BooksByPrice(), b4, leaf5, leaf5),
+                    new Node<Book>(new BooksByPrice(), b3,
+                        new Node<Book>(new BooksByPrice(), b5, leaf5, leaf5),
+                        new Node<Book>(new BooksByPrice(), b8, leaf5, leaf5))),
+                leaf5));
+  }
+
+  // tests for present
+  boolean testPresent(Tester t) {
+    return t.checkExpect(leaf1.present(5), false) && t.checkExpect(leaf2.present("five"), false)
+        && t.checkExpect(leaf3.present(b4), false) && t.checkExpect(validInt.present(3), true)
+        && t.checkExpect(validStr.present("Engineering"), true)
+        && t.checkExpect(books1.present(b2), true) && t.checkExpect(books2.present(b1), true)
+        && t.checkExpect(books3.present(b8), false);
+  }
+
+  // tests for getLeftmost
+  boolean testGetLeftmost(Tester t) {
+    return true;
+  }
+
+  // tests for getRight
+  boolean testGetRight(Tester t) {
+    return true;
+  }
+
+  // tests for sameTree
+  boolean testSameTree(Tester t) {
+    return t.checkExpect(leaf1.sameTree(leaf1), true) && t.checkExpect(leaf2.sameTree(leaf2), true)
+        && t.checkExpect(leaf3.sameTree(leaf3), true)
+        && t.checkExpect(validInt.sameTree(invalidInt), false)
+        && t.checkExpect(validStr.sameTree(validStr), true)
+        && t.checkExpect(books1.sameTree(books2), false)
+        && t.checkExpect(books2.sameTree(books3), false)
+        && t.checkExpect(books3.sameTree(books3), true);
+  }
+
+  // tests for sameLeaf
+  boolean testSameLeaf(Tester t) {
+    return t.checkExpect(leaf1.sameLeaf((Leaf<Integer>) leaf1), true)
+        && t.checkExpect(leaf2.sameLeaf((Leaf<String>) leaf2), true)
+        && t.checkExpect(leaf3.sameLeaf((Leaf<Book>) leaf3), true);
+  }
+
+  // tests for sameNode
+  boolean testSameNode(Tester t) {
+    return t.checkExpect(validInt.sameNode((Node<Integer>) invalidInt), false)
+        && t.checkExpect(validStr.sameNode((Node<String>) validStr), true)
+        && t.checkExpect(books1.sameNode((Node<Book>) books2), false)
+        && t.checkExpect(books2.sameNode((Node<Book>) books3), false)
+        && t.checkExpect(books3.sameNode((Node<Book>) books3), true);
+  }
+
+  // tests for sameData
+  boolean testSameData(Tester t) {
+    return t.checkExpect(leaf1.sameData(leaf1), true) && t.checkExpect(leaf2.sameData(leaf2), true)
+        && t.checkExpect(leaf3.sameData(leaf3), true)
+        && t.checkExpect(validInt.sameData(validInt), true)
+        && t.checkExpect(validInt.sameData(invalidInt), false)
+        && t.checkExpect(validInt.sameData(leaf1), false)
+        && t.checkExpect(validStr.sameData(validStr), true)
+        && t.checkExpect(validStr.sameData(leaf2), false)
+        && t.checkExpect(books1.sameData(books1), true)
+        && t.checkExpect(books1.sameData(books2), true)
+        && t.checkExpect(books1.sameData(books1.insert(b6)), false)
+        && t.checkExpect(books1.sameData(leaf3), false)
+        && t.checkExpect(books2.sameData(books2), true)
+        && t.checkExpect(books2.sameData(books3), true)
+        && t.checkExpect(books2.sameData(books2.insert(b7)), false)
+        && t.checkExpect(books2.sameData(leaf4), false)
+        && t.checkExpect(books3.sameData(books3), true)
+        && t.checkExpect(books3.sameData(books1), true)
+        && t.checkExpect(books3.sameData(books3.insert(b8)), false)
+        && t.checkExpect(books3.sameData(leaf5), false);
+  }
+
+  // tests for sameDataH
+  boolean testSameDataH(Tester t) {
+    return t.checkExpect(leaf1.sameDataH(leaf1), true)
+        && t.checkExpect(leaf2.sameDataH(leaf2), true)
+        && t.checkExpect(leaf3.sameDataH(leaf3), true)
+        && t.checkExpect(validInt.sameDataH(validInt), true)
+        && t.checkExpect(validInt.sameDataH(invalidInt), false)
+        && t.checkExpect(validInt.sameDataH(leaf1), false)
+        && t.checkExpect(validStr.sameDataH(validStr), true)
+        && t.checkExpect(validStr.sameDataH(leaf2), false)
+        && t.checkExpect(books1.sameDataH(books1), true)
+        && t.checkExpect(books1.sameDataH(books2), true)
+        && t.checkExpect(books1.sameDataH(books1.insert(b6)), true)
+        && t.checkExpect(books1.insert(b6).sameDataH(books1), false)
+        && t.checkExpect(books1.sameDataH(leaf3), false)
+        && t.checkExpect(books2.sameDataH(books2), true)
+        && t.checkExpect(books2.sameDataH(books3), true)
+        && t.checkExpect(books2.sameDataH(books2.insert(b7)), true)
+        && t.checkExpect(books2.insert(b7).sameData(books2), false)
+        && t.checkExpect(books2.sameDataH(leaf4), false)
+        && t.checkExpect(books3.sameDataH(books3), true)
+        && t.checkExpect(books3.sameDataH(books1), true)
+        && t.checkExpect(books3.sameDataH(books3.insert(b8)), true)
+        && t.checkExpect(books3.insert(b8).sameDataH(books3), false)
+        && t.checkExpect(books3.sameDataH(leaf5), false);
+  }
+
+  // tests for buildList
+  boolean testBuildList(Tester t) {
+    return true;
+  }
 }
