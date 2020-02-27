@@ -1,11 +1,29 @@
 import java.util.Comparator;
-import java.util.function.*;
 
 import tester.*;
 
 // to represent a binary tree
 abstract class ABST<T> {
   Comparator<T> order;
+  
+  /*
+   * FIELDS:
+   * ... this.order ... -- Comparator<T>
+   * METHODS:
+   * ... this.insert(T) ... -- ABST<T>
+   * ... this.present(T) ... -- boolean
+   * ... this.getLeftmost() ... -- T
+   * ... this.getLeftmostAcc(T) ... -- T
+   * ... this.getRight() ... -- ABST<T>
+   * ... this.sameTree(ABST<T>) ... -- boolean
+   * ... this.sameLeaf(Leaf<T>) ... -- boolean
+   * ... this.sameNode(Node<T>) ... -- boolean
+   * ... this.sameData(ABST<T>) ... -- boolean
+   * ... this.sameDataH(ABST<T>) ... -- boolean
+   * ... this.buildList() ... -- IList<T>
+   * METHODS OF FIELDS:
+   * ... this.order.compare(T, T) ... -- int
+   */
 
   // inserts the given object into the binary tree
   abstract ABST<T> insert(T el);
@@ -15,7 +33,7 @@ abstract class ABST<T> {
 
   // returns the leftmost item contained in the binary tree
   abstract T getLeftmost();
-  
+
   // helper function for getLeftMost
   // acc: keeps track of the last element
   abstract T getLeftmostAcc(T acc);
@@ -44,7 +62,7 @@ abstract class ABST<T> {
 
   // checks that everything in this tree is in the other tree
   abstract boolean sameDataH(ABST<T> other);
-  
+
   // builds a list representation of this binary search tree in order
   abstract IList<T> buildList();
 }
@@ -54,6 +72,25 @@ class Leaf<T> extends ABST<T> {
   Leaf(Comparator<T> order) {
     this.order = order;
   }
+  
+  /*
+   * same as above plus:
+   * FIELDS:
+   * ... this.order ... -- Comparator<T>
+   * METHODS:
+   * ... this.insert(T) ... -- ABST<T>
+   * ... this.present(T) ... -- boolean
+   * ... this.getLeftmost() ... -- T
+   * ... this.getLeftmostAcc(T) ... -- T
+   * ... this.getRight() ... -- ABST<T>
+   * ... this.sameTree(ABST<T>) ... -- boolean
+   * ... this.sameLeaf(Leaf<T>) ... -- boolean
+   * ... this.sameDataH(ABST<T>) ... -- boolean
+   * ... this.buildList() ... -- IList<T>
+   * METHODS OF FIELDS:
+   * ... this.order.compare(T, T) ... -- int
+   */
+  
 
   // inserts the given object into the binary tree
   ABST<T> insert(T el) {
@@ -69,12 +106,12 @@ class Leaf<T> extends ABST<T> {
   T getLeftmost() {
     throw new RuntimeException("No leftmost item of an empty tree");
   }
-  
+
   // returns the accumulator value upon reaching a leaf
   T getLeftmostAcc(T acc) {
     return acc;
   }
-  
+
   // throws exception (no rightmost of a leaf by itself)
   ABST<T> getRight() {
     throw new RuntimeException("No right of an empty tree");
@@ -95,7 +132,7 @@ class Leaf<T> extends ABST<T> {
   boolean sameDataH(ABST<T> other) {
     return true;
   }
-  
+
   IList<T> buildList() {
     return new MtList<T>();
   }
@@ -113,6 +150,50 @@ class Node<T> extends ABST<T> {
     this.left = left;
     this.right = right;
   }
+  
+  /*
+   * same as above plus:
+   * FIELDS:
+   * ... this.data ... -- T
+   * ... this.left ... -- ABST<T>
+   * ... this.right ... -- ABST<T>
+   * ... this.order ... -- Comparator<T>
+   * METHODS:
+   * ... this.insert(T) ... -- ABST<T>
+   * ... this.present(T) ... -- boolean
+   * ... this.getLeftmost() ... -- boolean
+   * ... this.getLeftmostAcc(T) ... -- T
+   * ... this.getRight() ... -- ABST<T>
+   * ... this.sameTree(ABST<T>) ... -- boolean
+   * ... this.sameNode(Node<T>) ... -- boolean
+   * ... this.sameDataH(ABST<T>) ... -- boolean
+   * ... this.buildList() ... -- IList<T>
+   * METHODS OF FIELDS:
+   * ... this.order.compare(T, T) ... -- int
+   * ... this.left.insert(T) ... -- ABST<T>
+   * ... this.right.insert(T) ... -- ABST<T>
+   * ... this.left.present(T) ... -- boolean
+   * ... this.right.present(T) ... -- boolean
+   * ... this.left.getLeftmost() ... -- T
+   * ... this.right.getLeftmost() ... -- T
+   * ... this.left.getLeftmostAcc(T) ... -- T
+   * ... this.right.getLeftmostAcc(T) ... -- T
+   * ... this.left.getRight() ... -- ABST<T>
+   * ... this.right.getRight() ... -- ABST<T>
+   * ... this.left.sameTree(ABST<T>) ... -- boolean
+   * ... this.right.sameTree(ABST<T>) ... -- boolean
+   * ... this.left.sameLeaf(Leaf<T>) ... -- boolean
+   * ... this.right.sameLeaf(Leaf<T>) ... -- boolean
+   * ... this.left.sameNode(Node<T>) ... -- boolean
+   * ... this.right.sameNode(Node<T>) ... -- boolean
+   * ... this.left.sameData(ABST<T>) ... -- boolean
+   * ... this.right.sameData(ABST<T>) ... -- boolean
+   * ... this.left.sameDataH(ABST<T>) ... -- boolean
+   * ... this.right.sameDataH(ABST<T>) ... -- boolean
+   * ... this.left.buildList() ... -- IList<T>
+   * ... this.right.buildList() ... -- IList<T>
+   * 
+   */
 
   // inserts the given object into the binary tree
   ABST<T> insert(T el) {
@@ -143,17 +224,18 @@ class Node<T> extends ABST<T> {
   T getLeftmost() {
     return this.getLeftmostAcc(this.data);
   }
-  
+
   // calls getLeftmost helper on left child
   T getLeftmostAcc(T acc) {
     return this.left.getLeftmostAcc(this.data);
   }
-  
+
   // get the part of a tree excluding the leftmost item
   ABST<T> getRight() {
     if (this.order.compare(this.data, this.getLeftmost()) == 0) {
       return this.right;
-    } else {
+    }
+    else {
       return new Node<T>(this.order, this.data, this.left.getRight(), this.right);
     }
   }
@@ -174,7 +256,7 @@ class Node<T> extends ABST<T> {
   boolean sameDataH(ABST<T> other) {
     return other.present(this.data) && this.left.sameDataH(other) && this.right.sameDataH(other);
   }
-  
+
   IList<T> buildList() {
     return new ConsList<T>(this.getLeftmost(), this.getRight().buildList());
   }
@@ -228,69 +310,24 @@ class StringOrder implements Comparator<String> {
   }
 }
 
-interface ILoString {
-  
-}
-
+// to represent a list of objects of type T
 interface IList<T> {
-  IList<T> filter(Predicate<T> pred);
-  <U> IList<U> map(Function<T,U> converter);
-  <U> U fold(BiFunction<T,U,U> converter,U initial);
 }
 
+// to represent an empty list of objects of type T
 class MtList<T> implements IList<T> {
-  
-  MtList() {}
-
-  @Override
-  public IList<T> filter(Predicate<T> pred) {
-    // TODO Auto-generated method stub
-    return new MtList<T>();
-  }
-
-  @Override
-  public <U> IList<U> map(Function<T, U> converter) {
-    // TODO Auto-generated method stub
-    return new MtList<U>();
-  }
-
-  @Override
-  public <U> U fold(BiFunction<T, U, U> converter, U initial) {
-    // TODO Auto-generated method stub
-    return initial;
+  MtList() {
   }
 }
 
+// to represent a non-empty list of objects of type T
 class ConsList<T> implements IList<T> {
   T first;
   IList<T> rest;
-  
-  ConsList(T first,IList<T> rest) {
+
+  ConsList(T first, IList<T> rest) {
     this.first = first;
     this.rest = rest;
-  }
-
-  @Override
-  public IList<T> filter(Predicate<T> pred) {
-    // TODO Auto-generated method stub
-    if (pred.test(this.first)) {
-      return new ConsList<T>(this.first,this.rest.filter(pred));
-    }
-    else {
-      return this.rest.filter(pred);
-    }
-  }
-
-  @Override
-  public <U> IList<U> map(Function<T, U> converter) {
-    // TODO Auto-generated method stub
-    return new ConsList<U>(converter.apply(this.first),this.rest.map(converter));
-  }
-
-  @Override
-  public <U> U fold(BiFunction<T, U, U> converter, U initial) {
-    // TODO Auto-generated method stub
-    return converter.apply(this.first, this.rest.fold(converter,initial));
   }
 }
 
@@ -351,12 +388,20 @@ class ExamplesABST<T> {
           new Node<Book>(new BooksByPrice(), b3,
               new Node<Book>(new BooksByPrice(), b5, leaf5, leaf5), leaf5)),
       leaf5);
-  
+
+  // Single book node for testing
+  ABST<Book> books4 = new Node<Book>(new BooksByPrice(), b8, leaf5, leaf5);
+
+  // lists of books examples
   IList<Book> mt = new MtList<Book>();
-  IList<Book> byTitle = new ConsList<Book>(b4, new ConsList<Book>(b3, new ConsList<Book>(b5, new ConsList<Book>(b1, new ConsList<Book>(b2, mt)))));
-  IList<Book> byAuthor = new ConsList<Book>(b1, new ConsList<Book>(b2, new ConsList<Book>(b3, new ConsList<Book>(b4, new ConsList<Book>(b5, mt)))));
-  IList<Book> byPrice = new ConsList<Book>(b4, new ConsList<Book>(b1, new ConsList<Book>(b5, new ConsList<Book>(b3, new ConsList<Book>(b2, mt)))));
-  IList<Book> randomList = new ConsList<Book>(b3, new ConsList<Book>(b5, new ConsList<Book>(b4, new ConsList<Book>(b7, new ConsList<Book>(b8, mt)))));
+  IList<Book> byTitle = new ConsList<Book>(b4, new ConsList<Book>(b3,
+      new ConsList<Book>(b5, new ConsList<Book>(b1, new ConsList<Book>(b2, mt)))));
+  IList<Book> byAuthor = new ConsList<Book>(b1, new ConsList<Book>(b2,
+      new ConsList<Book>(b3, new ConsList<Book>(b4, new ConsList<Book>(b5, mt)))));
+  IList<Book> byPrice = new ConsList<Book>(b4, new ConsList<Book>(b1,
+      new ConsList<Book>(b5, new ConsList<Book>(b3, new ConsList<Book>(b2, mt)))));
+  IList<Book> randomList = new ConsList<Book>(b3, new ConsList<Book>(b5,
+      new ConsList<Book>(b4, new ConsList<Book>(b7, new ConsList<Book>(b8, mt)))));
 
   // tests for insert
   boolean testInsert(Tester t) {
@@ -399,12 +444,51 @@ class ExamplesABST<T> {
 
   // tests for getLeftmost
   boolean testGetLeftmost(Tester t) {
-    return true;
+    return t.checkException(new RuntimeException("No leftmost item of an empty tree"), this.leaf1,
+        "getLeftmost")
+        && t.checkException(new RuntimeException("No leftmost item of an empty tree"), this.leaf2,
+            "getLeftmost")
+        && t.checkException(new RuntimeException("No leftmost item of an empty tree"), this.leaf3,
+            "getLeftmost")
+        && t.checkExpect(validInt.getLeftmost(), 1)
+        && t.checkExpect(validStr.getLeftmost(), "Cybersecurity")
+        && t.checkExpect(books1.getLeftmost(), b4) && t.checkExpect(books2.getLeftmost(), b1)
+        && t.checkExpect(books3.getLeftmost(), b4) && t.checkExpect(books4.getLeftmost(), b8);
   }
 
   // tests for getRight
   boolean testGetRight(Tester t) {
-    return true;
+    return t.checkException(new RuntimeException("No right of an empty tree"), this.leaf1,
+        "getRight")
+        && t.checkException(new RuntimeException("No right of an empty tree"), this.leaf2,
+            "getRight")
+        && t.checkException(new RuntimeException("No right of an empty tree"), this.leaf3,
+            "getRight")
+        && t.checkExpect(validInt.getRight(),
+            new Node<Integer>(new NumOrder(), 3, new Node<Integer>(new NumOrder(), 2, leaf1, leaf1),
+                new Node<Integer>(new NumOrder(), 4, leaf1, leaf1)))
+        && t.checkExpect(validStr.getRight(),
+            new Node<String>(new StringOrder(), "Fundies",
+                new Node<String>(new StringOrder(), "Discrete", leaf2,
+                    new Node<String>(new StringOrder(), "Engineering", leaf2, leaf2)),
+                leaf2))
+        && t.checkExpect(books1.getRight(),
+            new Node<Book>(new BooksByTitle(), b5,
+                new Node<Book>(new BooksByTitle(), b3, leaf3, leaf3),
+                new Node<Book>(new BooksByTitle(), b1, leaf3,
+                    new Node<Book>(new BooksByTitle(), b2, leaf3, leaf3))))
+        && t.checkExpect(books2.getRight(),
+            new Node<Book>(new BooksByAuthor(), b2, leaf4,
+                new Node<Book>(new BooksByAuthor(), b3, leaf4,
+                    new Node<Book>(new BooksByAuthor(), b4, leaf4,
+                        new Node<Book>(new BooksByAuthor(), b5, leaf4, leaf4)))))
+        && t.checkExpect(books3.getRight(),
+            new Node<Book>(new BooksByPrice(), b2,
+                new Node<Book>(new BooksByPrice(), b1, leaf5,
+                    new Node<Book>(new BooksByPrice(), b3,
+                        new Node<Book>(new BooksByPrice(), b5, leaf5, leaf5), leaf5)),
+                leaf5))
+        && t.checkExpect(books4.getRight(), leaf5);
   }
 
   // tests for sameTree
@@ -415,7 +499,8 @@ class ExamplesABST<T> {
         && t.checkExpect(validStr.sameTree(validStr), true)
         && t.checkExpect(books1.sameTree(books2), false)
         && t.checkExpect(books2.sameTree(books3), false)
-        && t.checkExpect(books3.sameTree(books3), true);
+        && t.checkExpect(books3.sameTree(books3), true)
+        && t.checkExpect(books4.sameTree(books1), false);
   }
 
   // tests for sameLeaf
@@ -486,6 +571,19 @@ class ExamplesABST<T> {
 
   // tests for buildList
   boolean testBuildList(Tester t) {
-    return true;
+    return t.checkExpect(leaf1.buildList(), new MtList<Integer>())
+        && t.checkExpect(leaf2.buildList(), new MtList<String>())
+        && t.checkExpect(leaf3.buildList(), mt)
+        && t.checkExpect(validInt.buildList(),
+            new ConsList<Integer>(1,
+                new ConsList<Integer>(2,
+                    new ConsList<Integer>(3, new ConsList<Integer>(4, new MtList<Integer>())))))
+        && t.checkExpect(validStr.buildList(),
+            new ConsList<String>("Cybersecurity",
+                new ConsList<String>("Discrete",
+                    new ConsList<String>("Engineering",
+                        new ConsList<String>("Fundies", new MtList<String>())))))
+        && t.checkExpect(books1.buildList(), byTitle) && t.checkExpect(books2.buildList(), byAuthor)
+        && t.checkExpect(books3.buildList(), byPrice);
   }
 }
